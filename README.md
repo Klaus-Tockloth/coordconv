@@ -9,30 +9,30 @@ $ ./coordconv
 
 Program:
   Name    : ./coordconv
-  Release : v0.1.0 - 2019/05/09
+  Release : v0.2.0 - 2019/05/10
   Purpose : coordinates conversion
   Info    : Utility for converting coordinates between WGS84 Lon Lat, UTM and MGRS/UTMREF.
 
 Supported conversions:
-  UTMtoLL   : converts from UTM to LL
-  UTMtoMGRS : converts from UTM to MGRS
-  LLtoUTM   : converts from LL to UTM
-  LLtoMGRS  : converts from LL to MGRS
-  MGRStoUTM : converts from MGRS to UTM
-  MGRStoLL  : converts from MGRS to LL
+  UTM2LatLon  : converts from UTM to LatLon
+  UTM2MGRS    : converts from UTM to MGRS
+  LatLon2UTM  : converts from LatLon to UTM
+  LatLon2MGRS : converts from LatLon to MGRS
+  MGRS2UTM    : converts from MGRS to UTM
+  MGRS2LatLon : converts from MGRS to LatLon
 
 Data objects:
-  UTM  : ZoneNumber ZoneLetter Easting Northing
-  LL   : Longitude Latitude
-  MGRS : String
+  UTM    : ZoneNumber ZoneLetter Easting Northing
+  LatLon : Longitude Latitude
+  MGRS   : String
 
 Examples:
-  ./coordconv UTMtoLL 32 U 399000 5757000
-  ./coordconv UTMtoMGRS 32 U 399000 5757000
-  ./coordconv LLtoUTM 7.53 51.95
-  ./coordconv LLtoMGRS 7.53 51.95
-  ./coordconv MGRStoUTM 32ULC989564
-  ./coordconv MGRStoLL 32ULC9897356497
+  ./coordconv UTM2LatLon 32U 399000 5757000
+  ./coordconv UTM2MGRS 32U 399000 5757000
+  ./coordconv LatLon2UTM 51.95 7.53
+  ./coordconv LatLon2MGRS 51.95 7.53
+  ./coordconv MGRS2UTM 32ULC989564
+  ./coordconv MGRS2LatLon 32ULC9897356497
 
 Abbreviations:
   Lon    : Longitude
@@ -46,23 +46,23 @@ Abbreviations:
 ## Output
 
 ```TXT
-$ ./coordconv UTMtoLL 32 U 399000 5757000
-32 U 399000 5757000 -> 7.53023117 51.95451906
+$ ./coordconv UTM2LatLon 32U 399000 5757000
+32U 399000 5757000 -> 51.954519 7.530231
 
-$ ./coordconv UTMtoMGRS 32 U 399000 5757000
-32 U 399000 5757000 -> 32ULC9900057000
+$ ./coordconv UTM2MGRS 32U 399000 5757000
+32U 399000 5757000 -> 32ULC9900057000
 
-$ ./coordconv LLtoUTM 7.53 51.95
-7.53000000 51.95000000 -> 32 U 398973 5756497
+$ ./coordconv LatLon2UTM 51.95 7.53
+51.950000 7.530000 -> 32U 398973 5756497
 
-$ ./coordconv LLtoMGRS 7.53 51.95
-7.53000000 51.95000000 -> 32ULC9897356497
+$ ./coordconv LatLon2MGRS 51.95 7.53
+51.950000 7.530000 -> 32ULC9897356497
 
-$ ./coordconv MGRStoUTM 32ULC989564
-32ULC989564 -> 32 U 398900 5756400
+$ ./coordconv MGRS2UTM 32ULC989564
+32ULC989564 -> 32U 398900 5756400
 
-$ ./coordconv MGRStoLL 32ULC9897356497
-32ULC9897356497 -> 7.52998627 51.94999316
+$ ./coordconv MGRS2LatLon 32ULC9897356497
+32ULC9897356497 -> 51.949993 7.529986
 ```
 
 ## Remarks

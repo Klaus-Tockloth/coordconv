@@ -5,8 +5,9 @@
 # http://stackoverflow.com/documentation/go/1020/cross-compilation#t=201703051136361578518
 #
 # version v1.0.0 - 2019/05/08: initial release
+# version v1.0.1 - 2019/05/09: incorrect app name fixed
 
-appname := ccordconv
+appname := coordconv
 sources := $(wildcard *.go)
 
 build = GOOS=$(1) GOARCH=$(2) go build -o build/$(appname)$(3)

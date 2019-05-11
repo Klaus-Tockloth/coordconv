@@ -7,6 +7,7 @@ Description:
 
 Releases:
 - v0.1.0 - 2019/05/09 : initial release
+- v0.2.0 - 2019/05/10 : usage simplified
 
 Author:
 - Klaus Tockloth
@@ -54,8 +55,8 @@ import (
 // general program info
 var (
 	progName    = os.Args[0]
-	progVersion = "v0.1.0"
-	progDate    = "2019/05/09"
+	progVersion = "v0.2.0"
+	progDate    = "2019/05/10"
 	progPurpose = "coordinates conversion"
 	progInfo    = "Utility for converting coordinates between WGS84 Lon Lat, UTM and MGRS/UTMREF."
 )
@@ -78,11 +79,11 @@ func main() {
 	conversion := os.Args[1]
 
 	switch strings.ToUpper(conversion) {
-	case "UTMTOLL":
-		if len(os.Args) < 6 {
+	case "UTM2LATLON":
+		if len(os.Args) < 5 {
 			printUsage()
 		}
-		utm, err = parseUTM(os.Args[2], os.Args[3], os.Args[4], os.Args[5])
+		utm, err = parseUTM(os.Args[2], os.Args[3], os.Args[4])
 		if err != nil {
 			fmt.Printf("%s -> %v\n", utm, err)
 			os.Exit(1)
@@ -95,11 +96,11 @@ func main() {
 			fmt.Printf("%s -> %s\n", utm, ll)
 		}
 
-	case "UTMTOMGRS":
-		if len(os.Args) < 6 {
+	case "UTM2MGRS":
+		if len(os.Args) < 5 {
 			printUsage()
 		}
-		utm, err = parseUTM(os.Args[2], os.Args[3], os.Args[4], os.Args[5])
+		utm, err = parseUTM(os.Args[2], os.Args[3], os.Args[4])
 		if err != nil {
 			fmt.Printf("%s -> %v\n", utm, err)
 			os.Exit(1)
@@ -107,7 +108,7 @@ func main() {
 		mgrs = utm.ToMGRS(1)
 		fmt.Printf("%s -> %s\n", utm, mgrs)
 
-	case "LLTOUTM":
+	case "LATLON2UTM":
 		if len(os.Args) < 4 {
 			printUsage()
 		}
@@ -119,7 +120,7 @@ func main() {
 		utm = ll.ToUTM()
 		fmt.Printf("%s -> %s\n", ll, utm)
 
-	case "LLTOMGRS":
+	case "LATLON2MGRS":
 		if len(os.Args) < 4 {
 			printUsage()
 		}
@@ -136,7 +137,7 @@ func main() {
 			fmt.Printf("%s -> %s\n", ll, mgrs)
 		}
 
-	case "MGRSTOUTM":
+	case "MGRS2UTM":
 		if len(os.Args) < 3 {
 			printUsage()
 		}
@@ -150,7 +151,7 @@ func main() {
 			fmt.Printf("%s -> %s\n", mgrs, utm)
 		}
 
-	case "MGRSTOLL":
+	case "MGRS2LATLON":
 		if len(os.Args) < 3 {
 			printUsage()
 		}
@@ -175,27 +176,27 @@ func main() {
 /*
 parseUTM parses string set into UTM object.
 */
-func parseUTM(zoneNumber, zoneLetter, easting, northing string) (coco.UTM, error) {
+func parseUTM(zone, easting, northing string) (coco.UTM, error) {
 
 	var utm coco.UTM
 	var err error
 
-	value, err := strconv.ParseInt(zoneNumber, 10, 0)
+	n, err := fmt.Sscanf(zone, "%d%c", &utm.ZoneNumber, &utm.ZoneLetter)
 	if err != nil {
-		return utm, fmt.Errorf("error <%v> parsing UTM zone number, input=%v", err, zoneNumber)
+		return utm, fmt.Errorf("error <%v> parsing UTM zone, zone=%v", err, zone)
 	}
-	utm.ZoneNumber = int(value)
-
-	utm.ZoneLetter = byte(zoneLetter[0])
+	if n != 2 {
+		return utm, fmt.Errorf("error parsing UTM zone, missing zone number and/or zone letter, zone=%v", zone)
+	}
 
 	utm.Easting, err = strconv.ParseFloat(easting, 64)
 	if err != nil {
-		return utm, fmt.Errorf("error <%v> parsing UTM easting, input=%v", err, easting)
+		return utm, fmt.Errorf("error <%v> parsing UTM easting, easting=%v", err, easting)
 	}
 
 	utm.Northing, err = strconv.ParseFloat(northing, 64)
 	if err != nil {
-		return utm, fmt.Errorf("error <%v> parsing UTM northing, input=%v", err, northing)
+		return utm, fmt.Errorf("error <%v> parsing UTM northing, northing=%v", err, northing)
 	}
 
 	return utm, nil
@@ -213,25 +214,25 @@ func printUsage() {
 	fmt.Printf("  Info    : %s\n", progInfo)
 
 	fmt.Printf("\nSupported conversions:\n")
-	fmt.Printf("  UTMtoLL   : converts from UTM to LL\n")
-	fmt.Printf("  UTMtoMGRS : converts from UTM to MGRS\n")
-	fmt.Printf("  LLtoUTM   : converts from LL to UTM\n")
-	fmt.Printf("  LLtoMGRS  : converts from LL to MGRS\n")
-	fmt.Printf("  MGRStoUTM : converts from MGRS to UTM\n")
-	fmt.Printf("  MGRStoLL  : converts from MGRS to LL\n")
+	fmt.Printf("  UTM2LatLon  : converts from UTM to LatLon\n")
+	fmt.Printf("  UTM2MGRS    : converts from UTM to MGRS\n")
+	fmt.Printf("  LatLon2UTM  : converts from LatLon to UTM\n")
+	fmt.Printf("  LatLon2MGRS : converts from LatLon to MGRS\n")
+	fmt.Printf("  MGRS2UTM    : converts from MGRS to UTM\n")
+	fmt.Printf("  MGRS2LatLon : converts from MGRS to LatLon\n")
 
 	fmt.Printf("\nData objects:\n")
-	fmt.Printf("  UTM  : ZoneNumber ZoneLetter Easting Northing\n")
-	fmt.Printf("  LL   : Longitude Latitude\n")
-	fmt.Printf("  MGRS : String\n")
+	fmt.Printf("  UTM    : ZoneNumber ZoneLetter Easting Northing\n")
+	fmt.Printf("  LatLon : Longitude Latitude\n")
+	fmt.Printf("  MGRS   : String\n")
 
 	fmt.Printf("\nExamples:\n")
-	fmt.Printf("  %s UTMtoLL 32 U 399000 5757000\n", progName)
-	fmt.Printf("  %s UTMtoMGRS 32 U 399000 5757000\n", progName)
-	fmt.Printf("  %s LLtoUTM 7.53 51.95\n", progName)
-	fmt.Printf("  %s LLtoMGRS 7.53 51.95\n", progName)
-	fmt.Printf("  %s MGRStoUTM 32ULC989564\n", progName)
-	fmt.Printf("  %s MGRStoLL 32ULC9897356497\n", progName)
+	fmt.Printf("  %s UTM2LatLon 32U 399000 5757000\n", progName)
+	fmt.Printf("  %s UTM2MGRS 32U 399000 5757000\n", progName)
+	fmt.Printf("  %s LatLon2UTM 51.95 7.53\n", progName)
+	fmt.Printf("  %s LatLon2MGRS 51.95 7.53\n", progName)
+	fmt.Printf("  %s MGRS2UTM 32ULC989564\n", progName)
+	fmt.Printf("  %s MGRS2LatLon 32ULC9897356497\n", progName)
 
 	fmt.Printf("\nAbbreviations:\n")
 	fmt.Printf("  Lon    : Longitude\n")
@@ -248,36 +249,20 @@ func printUsage() {
 /*
 parseLL parses string set into LL object.
 */
-func parseLL(lon, lat string) (coco.LL, error) {
+func parseLL(lat, lon string) (coco.LL, error) {
 
 	var ll coco.LL
 	var err error
 
-	ll.Lon, err = strconv.ParseFloat(lon, 64)
-	if err != nil {
-		return ll, fmt.Errorf("error <%v> parsing LL lon, input=%v", err, lon)
-	}
-
 	ll.Lat, err = strconv.ParseFloat(lat, 64)
 	if err != nil {
-		return ll, fmt.Errorf("error <%v> parsing LL lat, input=%v", err, lat)
+		return ll, fmt.Errorf("error <%v> parsing LL lat, lat=%v", err, lat)
+	}
+
+	ll.Lon, err = strconv.ParseFloat(lon, 64)
+	if err != nil {
+		return ll, fmt.Errorf("error <%v> parsing LL lon, lon=%v", err, lon)
 	}
 
 	return ll, nil
-}
-
-/*
-formatLL formats Lon/Lat object.
-*/
-func formatLL(ll coco.LL) string {
-
-	return fmt.Sprintf("%.8f %.8f", ll.Lon, ll.Lat)
-}
-
-/*
-formatUTM formats UTM object.
-*/
-func formatUTM(utm coco.UTM) string {
-
-	return fmt.Sprintf("%d %c %.0f %.0f", utm.ZoneNumber, utm.ZoneLetter, utm.Easting, utm.Northing)
 }
