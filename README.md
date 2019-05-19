@@ -69,3 +69,4 @@ $ ./coordconv MGRS2LatLon 32ULC9897356497
 
 * See [releases](https://github.com/Klaus-Tockloth/coordconv/releases) for executable program.
 * See package [coco](https://github.com/Klaus-Tockloth/coco) for Go library.
+* UTM format = zone number, zone letter (not hemisphere), easting, northing
